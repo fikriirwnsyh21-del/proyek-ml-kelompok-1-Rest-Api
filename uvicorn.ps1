@@ -1,0 +1,1 @@
+if (Test-Path "$PSScriptRoot\.venv\Scripts\python.exe") { & "$PSScriptRoot\.venv\Scripts\python.exe" -m uvicorn @args } else { & python -m uvicorn @args }

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Prediksi Risiko Serangan Jantung - Kelompok 1</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-badge">Kelompok 1 - Machine Learning</div>
+      <h1>Sistem Prediksi Risiko Serangan Jantung</h1>
+      <p class="subtitle">Screening kesehatan preventif berbasis Model Random Forest & FastAPI</p>
+    </header>
+
+    <main class="content-grid">
+      <section class="card form-card">
+        <h2>Input Data Klinis & Gaya Hidup Pasien</h2>
+        <p class="form-desc">Lengkapi formulir di bawah ini dengan data pengukuran dan riwayat medis yang akurat.</p>
+        
+        <form id="predictionForm">
+          <!-- Grup 1: Pengukuran Fisik & Vital -->
+          <div class="form-section-title">1. Pengukuran Fisik & Tekanan Darah</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="age">Usia (Tahun)</label>
+              <input type="number" id="age" name="age" min="18" max="120" value="45" required>
+            </div>
+            <div class="form-group">
+              <label for="waist_circumference">Lingkar Pinggang (cm)</label>
+              <input type="number" step="0.1" id="waist_circumference" name="waist_circumference" min="40" max="200" value="85" required>
+            </div>
+            <div class="form-group">
+              <label for="blood_pressure_systolic">Tekanan Darah Sistolik (mmHg)</label>
+              <input type="number" id="blood_pressure_systolic" name="blood_pressure_systolic" min="60" max="250" value="120" required>
+            </div>
+            <div class="form-group">
+              <label for="blood_pressure_diastolic">Tekanan Darah Diastolik (mmHg)</label>
+              <input type="number" id="blood_pressure_diastolic" name="blood_pressure_diastolic" min="40" max="160" value="80" required>
+            </div>
+            <div class="form-group">
+              <label for="cholesterol_level">Kadar Kolesterol Total (mg/dL)</label>
+              <input type="number" id="cholesterol_level" name="cholesterol_level" min="80" max="500" value="190" required>
+            </div>
+            <div class="form-group">
+              <label for="sleep_hours">Durasi Tidur Harian (Jam)</label>
+              <input type="number" step="0.5" id="sleep_hours" name="sleep_hours" min="1" max="24" value="7" required>
+            </div>
+          </div>
+
+          <!-- Grup 2: Riwayat Medis -->
+          <div class="form-section-title">2. Riwayat Kesehatan Medis</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="hypertension">Riwayat Hipertensi</label>
+              <select id="hypertension" name="hypertension" required>
+                <option value="0">Tidak Memiliki Hipertensi</option>
+                <option value="1">Memiliki Riwayat Hipertensi</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="diabetes">Riwayat Diabetes</label>
+              <select id="diabetes" name="diabetes" required>
+                <option value="0">Tidak Menderita Diabetes</option>
+                <option value="1">Menderita Diabetes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="obesity">Status Obesitas</label>
+              <select id="obesity" name="obesity" required>
+                <option value="0">Tidak Obesitas</option>
+                <option value="1">Obesitas</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="previous_heart_disease">Riwayat Sakit Jantung Sebelumnya</label>
+              <select id="previous_heart_disease" name="previous_heart_disease" required>
+                <option value="0">Tidak Ada</option>
+                <option value="1">Pernah Mengalami</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Grup 3: Faktor Gaya Hidup & Genetik -->
+          <div class="form-section-title">3. Kebiasaan & Riwayat Keluarga</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="family_history">Riwayat Penyakit Jantung Keluarga</label>
+              <select id="family_history" name="family_history" required>
+                <option value="0">Tidak Ada Riwayat Keluarga</option>
+                <option value="1">Ada Riwayat Keluarga</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="smoking_status">Status Merokok</label>
+              <select id="smoking_status" name="smoking_status" required>
+                <option value="Never">Tidak Pernah (Never)</option>
+                <option value="Past">Mantan Perokok (Past)</option>
+                <option value="Current">Perokok Aktif (Current)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button type="submit" id="submitBtn" class="btn btn-primary">
+              <span class="btn-text">Analisis Risiko Sekarang</span>
+              <span class="spinner" style="display: none;"></span>
+            </button>
+            <button type="reset" id="resetBtn" class="btn btn-secondary">Reset Form</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel Hasil -->
+      <section class="card result-card" id="resultCard">
+        <h2>Hasil Analisis Prediksi</h2>
+        <div id="initialState" class="result-placeholder">
+          <div class="placeholder-icon">🫀</div>
+          <p>Silakan isi formulir di samping dan tekan tombol <strong>"Analisis Risiko Sekarang"</strong> untuk melihat hasil prediksi risiko serangan jantung.</p>
+        </div>
+
+        <div id="resultContent" class="result-content" style="display: none;">
+          <div id="statusBadge" class="status-badge">Menunggu Analisis...</div>
+          <h3 id="resultHeading" class="result-heading">-</h3>
+          
+          <div class="prob-section">
+            <div class="prob-label">
+              <span>Tingkat Risiko Serangan Jantung:</span>
+              <strong id="riskPercent">0%</strong>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="riskBar" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+            <div class="prob-meta">
+              <span>Probabilitas Rendah: <strong id="noRiskPercent">0%</strong></span>
+            </div>
+          </div>
+
+          <div class="recommendation-box">
+            <h4>Rekomendasi Medis:</h4>
+            <p id="recommendationText">-</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; 2026 Proyek Machine Learning Kelompok 1 &bull; REST API dengan FastAPI & Uvicorn &bull; Dokumen API: <a href="/docs" target="_blank">Swagger UI (/docs)</a></p>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
