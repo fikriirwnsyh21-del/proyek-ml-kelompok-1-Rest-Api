@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CardioRisk AI &mdash; Sistem Prediksi Risiko Serangan Jantung | Kelompok 1 S1 Sistem Informasi UNIB</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Bar (Navy Tipis) -->
+  <div class="top-bar">
+    <div class="container top-bar-content">
+      <div class="top-bar-left">
+        <span class="top-bar-item">🏛️ Universitas Bengkulu</span>
+        <span class="top-bar-item">&bull;</span>
+        <span class="top-bar-item">Program Studi S1 Sistem Informasi</span>
+      </div>
+      <div class="top-bar-right">
+        <span class="top-bar-item">Tugas Besar Praktikum Machine Learning 2026</span>
+        <span class="top-bar-item">&bull;</span>
+        <span class="top-bar-item">Kelompok 1</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header & Main Navigation Bar -->
+  <header class="main-navbar">
+    <div class="container navbar-content">
+      <a href="/" class="brand-logo" aria-label="Beranda CardioRisk AI">
+        <div class="logo-symbol">🫀</div>
+        <div class="brand-text">
+          <h1>CardioRisk <span class="text-maroon">AI</span></h1>
+          <span>Sistem Prediksi Risiko Serangan Jantung</span>
+        </div>
+      </a>
+
+      <nav aria-label="Navigasi Utama">
+        <ul class="nav-links">
+          <li><a href="/" class="active">Formulir Skrining</a></li>
+          <li><a href="/docs" target="_blank" rel="noopener">Dokumentasi API</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-cta">
+        <a href="/docs" target="_blank" class="btn btn-primary">
+          <span>Swagger UI</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Formulir Skrining Pasien (Langsung Tanpa Hero/Fitur/Disclaimer) -->
+  <section id="skrining" class="screening-section">
+    <div class="container">
+      <!-- Section Title -->
+      <div class="section-header-center">
+        <span class="section-label-red">Layanan Skrining Preventif</span>
+        <h2 class="section-title">Masukkan Parameter Klinis &amp; Riwayat Pasien</h2>
+        <p class="section-subtitle">
+          Lengkapi 12 indikator kesehatan di bawah ini dengan akurat. Sistem akan menganalisis data melalui model machine learning dan menyajikan hasilnya di halaman khusus.
+        </p>
+      </div>
+
+      <!-- Layout Grid Form & Sidebar -->
+      <div class="form-layout-grid">
+        <!-- Kolom Form Utama -->
+        <div class="card form-main-card">
+          <div class="card-header-clean">
+            <h3>Formulir Data Pasien</h3>
+            <p class="card-desc">Tanda bintang merah (<span class="req-star">*</span>) menandakan kolom wajib diisi sesuai batas rentang yang valid.</p>
+          </div>
+
+          <!-- Pesan Error Dinamis -->
+          <div id="errorBox" class="alert-box alert-danger" style="display: none;" role="alert">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-content">
+              <strong id="errorTitle">Terjadi Kesalahan Validasi</strong>
+              <p id="errorMessage"></p>
+            </div>
+          </div>
+
+          <form id="predictionForm" novalidate>
+            <!-- Fieldset 1: Pengukuran Fisik & Tanda Vital -->
+            <div class="form-fieldset-title">
+              <span class="fieldset-num">1</span>
+              <span>Pengukuran Fisik &amp; Tanda Vital</span>
+            </div>
+            <div class="grid-2-inputs">
+              <div class="form-group">
+                <label for="age">Usia Pasien <span class="req-star">*</span></label>
+                <div class="input-with-unit">
+                  <input type="number" id="age" name="age" min="18" max="120" step="1" value="45" required placeholder="18 - 120">
+                  <span class="unit-tag">Tahun</span>
+                </div>
+                <small class="input-hint">Rentang valid: 18 &ndash; 120 tahun</small>
+              </div>
+
+              <div class="form-group">
+                <label for="waist_circumference">Lingkar Pinggang <span class="req-star">*</span></label>
+                <div class="input-with-unit">
+                  <input type="number" step="0.1" id="waist_circumference" name="waist_circumference" min="40" max="200" value="85.0" required placeholder="40 - 200">
+                  <span class="unit-tag">cm</span>
+                </div>
+                <small class="input-hint">Rentang valid: 40 &ndash; 200 cm</small>
+              </div>
+
+              <div class="form-group">
+                <label for="blood_pressure_systolic">Tekanan Darah Sistolik <span class="req-star">*</span></label>
+                <div class="input-with-unit">
+                  <input type="number" step="1" id="blood_pressure_systolic" name="blood_pressure_systolic" min="60" max="260" value="120" required placeholder="60 - 260">
+                  <span class="unit-tag">mmHg</span>
+                </div>
+                <small class="input-hint">Normal: 90 &ndash; 120 mmHg (Maks: 260)</small>
+              </div>
+
+              <div class="form-group">
+                <label for="blood_pressure_diastolic">Tekanan Darah Diastolik <span class="req-star">*</span></label>
+                <div class="input-with-unit">
+                  <input type="number" step="1" id="blood_pressure_diastolic" name="blood_pressure_diastolic" min="40" max="160" value="80" required placeholder="40 - 160">
+                  <span class="unit-tag">mmHg</span>
+                </div>
+                <small class="input-hint">Normal: 60 &ndash; 80 mmHg (Maks: 160)</small>
+              </div>
+
+              <div class="form-group">
+                <label for="cholesterol_level">Kadar Kolesterol Total <span class="req-star">*</span></label>
+                <div class="input-with-unit">
+                  <input type="number" step="1" id="cholesterol_level" name="cholesterol_level" min="80" max="600" value="190" required placeholder="80 - 600">
+                  <span class="unit-tag">mg/dL</span>
+                </div>
+                <small class="input-hint">Normal: &lt; 200 mg/dL (Maks: 600)</small>
+              </div>
+
+              <div class="form-group">
+                <label for="sleep_hours">Durasi Tidur Harian <span class="req-star">*</span></label>
+                <div class="input-with-unit">
+                  <input type="number" step="0.5" id="sleep_hours" name="sleep_hours" min="1" max="24" value="7.0" required placeholder="1 - 24">
+                  <span class="unit-tag">Jam/hari</span>
+                </div>
+                <small class="input-hint">Rekomendasi sehat: 7 &ndash; 9 jam</small>
+              </div>
+            </div>
+
+            <!-- Fieldset 2: Riwayat Kesehatan Medis -->
+            <div class="form-fieldset-title">
+              <span class="fieldset-num">2</span>
+              <span>Riwayat Medis &amp; Komorbiditas</span>
+            </div>
+            <div class="grid-2-inputs">
+              <div class="form-group">
+                <label for="hypertension">Riwayat Hipertensi <span class="req-star">*</span></label>
+                <select id="hypertension" name="hypertension" required>
+                  <option value="0">0 &mdash; Tidak Memiliki Riwayat Hipertensi</option>
+                  <option value="1">1 &mdash; Ada Riwayat Hipertensi</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="diabetes">Riwayat Diabetes <span class="req-star">*</span></label>
+                <select id="diabetes" name="diabetes" required>
+                  <option value="0">0 &mdash; Tidak Menderita Diabetes</option>
+                  <option value="1">1 &mdash; Terdiagnosis Diabetes</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="obesity">Status Obesitas <span class="req-star">*</span></label>
+                <select id="obesity" name="obesity" required>
+                  <option value="0">0 &mdash; Tidak Obesitas (Normal / Underweight)</option>
+                  <option value="1">1 &mdash; Obesitas (BMI &ge; 30)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="previous_heart_disease">Riwayat Penyakit Jantung Terdahulu <span class="req-star">*</span></label>
+                <select id="previous_heart_disease" name="previous_heart_disease" required>
+                  <option value="0">0 &mdash; Belum Pernah Mengalami</option>
+                  <option value="1">1 &mdash; Pernah Mengalami Gangguan Jantung</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Fieldset 3: Gaya Hidup & Genetik -->
+            <div class="form-fieldset-title">
+              <span class="fieldset-num">3</span>
+              <span>Faktor Gaya Hidup &amp; Genetik</span>
+            </div>
+            <div class="grid-2-inputs">
+              <div class="form-group">
+                <label for="family_history">Riwayat Sakit Jantung Keluarga <span class="req-star">*</span></label>
+                <select id="family_history" name="family_history" required>
+                  <option value="0">0 &mdash; Tidak Ada Riwayat Keluarga</option>
+                  <option value="1">1 &mdash; Ada Riwayat Penyakit Jantung Keluarga</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="smoking_status">Status Merokok Pasien <span class="req-star">*</span></label>
+                <select id="smoking_status" name="smoking_status" required>
+                  <option value="Never">Never (Tidak Pernah Merokok)</option>
+                  <option value="Past">Past (Mantan Perokok)</option>
+                  <option value="Current">Current (Perokok Aktif)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Tombol Aksi Form -->
+            <div class="form-actions-row">
+              <button type="submit" id="submitBtn" class="btn btn-primary" style="flex: 2;">
+                <span class="btn-text">Analisis Risiko &amp; Lihat Hasil</span>
+                <span>&rarr;</span>
+                <span class="spinner" style="display: none;" aria-hidden="true"></span>
+              </button>
+              <button type="button" id="resetBtn" class="btn btn-secondary">
+                <span>Reset Form</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Kolom Samping (Sidebar) -->
+        <aside class="sidebar-column">
+          <!-- Uji Coba Cepat (Test Cases) -->
+          <div class="card">
+            <h4 class="preset-card-title">⚡ Skenario Pengujian Cepat</h4>
+            <p class="card-desc" style="margin-bottom: 14px;">Muat data sampel untuk mempermudah evaluasi dan demonstrasi:</p>
+            
+            <div class="preset-stack">
+              <button type="button" id="btnSampleLowRisk" class="btn-preset-block preset-low-risk">
+                <span class="preset-icon">🟢</span>
+                <div class="preset-details">
+                  <strong>Kasus 1: Pasien Sehat</strong>
+                  <small>Usia 32 thn, TD 115/75, Kolest 165, Bebas Komorbid</small>
+                </div>
+              </button>
+
+              <button type="button" id="btnSampleHighRisk" class="btn-preset-block preset-high-risk">
+                <span class="preset-icon">🔴</span>
+                <div class="preset-details">
+                  <strong>Kasus 2: Pasien Risiko Tinggi</strong>
+                  <small>Usia 64 thn, TD 165/100, Kolest 285, Perokok Aktif</small>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Informasi Spesifikasi Sistem -->
+          <div class="card">
+            <h4 class="preset-card-title">ℹ️ Spesifikasi Arsitektur</h4>
+            <ul class="corporate-info-list">
+              <li>
+                <strong>Model Klasifikasi:</strong>
+                <span>Random Forest Classifier (Ensemble 100 Trees)</span>
+              </li>
+              <li>
+                <strong>Preprocessing Pipeline:</strong>
+                <span>ColumnTransformer (StandardScaler + OneHotEncoder)</span>
+              </li>
+              <li>
+                <strong>Pencegahan Data Leakage:</strong>
+                <span>Fit hanya pada data latih, transform pada inferensi</span>
+              </li>
+              <li>
+                <strong>Protokol Komunikasi:</strong>
+                <span>FastAPI Async JSON via <code>POST /predict</code></span>
+              </li>
+              <li>
+                <strong>Validasi Skema:</strong>
+                <span>Pydantic v2 (Pemeriksaan rentang batas otomatis)</span>
+              </li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Sederhana -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom-bar" style="border-top: none; padding-top: 0;">
+        <span>&copy; 2026 Kelompok 1 &bull; Praktikum Pembelajaran Mesin &bull; S1 Sistem Informasi Universitas Bengkulu</span>
+        <span>
+          <a href="/docs" target="_blank" rel="noopener" style="color: #CBD5E1; text-decoration: none;">Swagger UI</a>
+          &bull;
+          <a href="/health" target="_blank" rel="noopener" style="color: #CBD5E1; text-decoration: none;">Health Check</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Hasil Analisis Risiko Serangan Jantung &mdash; CardioRisk AI</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Bar (Navy Tipis) -->
+  <div class="top-bar">
+    <div class="container top-bar-content">
+      <div class="top-bar-left">
+        <span class="top-bar-item">🏛️ Universitas Bengkulu</span>
+        <span class="top-bar-item">&bull;</span>
+        <span class="top-bar-item">Program Studi S1 Sistem Informasi</span>
+      </div>
+      <div class="top-bar-right">
+        <span class="top-bar-item">Tugas Besar Praktikum Machine Learning 2026</span>
+        <span class="top-bar-item">&bull;</span>
+        <span class="top-bar-item">Kelompok 1 (Kesehatan &amp; Medis)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header & Navigation Bar -->
+  <header class="main-navbar">
+    <div class="container navbar-content">
+      <a href="/" class="brand-logo" aria-label="Beranda CardioRisk AI">
+        <div class="logo-symbol">🫀</div>
+        <div class="brand-text">
+          <h1>CardioRisk <span class="text-maroon">AI</span></h1>
+          <span>Laporan Hasil Skrining Klinis</span>
+        </div>
+      </a>
+
+      <!-- Tombol Kembali ke Halaman Sebelumnya di Header -->
+      <div class="nav-cta">
+        <a href="/" class="btn btn-secondary">
+          <span class="arrow">&larr;</span>
+          <span>Kembali ke Halaman Sebelumnya</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="result-page-wrapper">
+    <!-- Baris Navigasi Cepat Kembali -->
+    <div class="back-navigation-bar">
+      <a href="/" class="btn-back">
+        <span class="arrow">&larr;</span>
+        <span>Kembali ke Halaman Sebelumnya (Formulir Skrining)</span>
+      </a>
+      <span class="timestamp-text" id="reportTimestamp">Memuat waktu...</span>
+    </div>
+
+    <!-- Academic Disclaimer Banner -->
+    <div class="disclaimer-banner" style="margin-bottom: 24px;" role="alert">
+      <div class="disclaimer-icon">⚠️</div>
+      <div class="disclaimer-text">
+        <strong>DISCLAIMER AKADEMIK:</strong> Hasil skrining ini adalah luaran prototipe edukatif berbasis Machine Learning untuk Tugas Besar Praktikum Pembelajaran Mesin Universitas Bengkulu. Seluruh estimasi probabilitas bersifat referensi komputasional dan <strong>bukan vonis medis resmi</strong>.
+      </div>
+    </div>
+
+    <!-- State Kosong Jika Belum Ada Data Input -->
+    <div id="noDataState" class="card empty-result-card" style="display: none;">
+      <div class="empty-icon">📋</div>
+      <h3>Belum Ada Data Pasien yang Dianalisis</h3>
+      <p>Anda belum mengisi formulir skrining data klinis. Silakan kembali ke halaman utama untuk memasukkan parameter pasien atau menggunakan skenario pengujian cepat.</p>
+      <a href="/" class="btn btn-primary">
+        <span>&larr;</span>
+        <span>Buka Formulir Skrining Pasien</span>
+      </a>
+    </div>
+
+    <!-- Konten Utama Hasil Analisis -->
+    <main id="resultMain" style="display: none;">
+      <!-- Kartu Status Utama (Hero Result Card) -->
+      <section class="card result-hero-card">
+        <div class="result-hero-top">
+          <div>
+            <div id="resultBadge" class="status-badge">Menghitung...</div>
+            <div class="timestamp-text" style="margin-top: 6px;">Evaluasi Otomatis via Scikit-Learn Random Forest Pipeline</div>
+          </div>
+          <div id="resultIcon" class="result-icon-large">🫀</div>
+        </div>
+
+        <h2 id="resultTitle" class="hero-result-title">-</h2>
+        <p id="resultDescription" class="hero-result-subtitle">-</p>
+
+        <!-- Box Visualisasi Probabilitas -->
+        <div class="hero-prob-box">
+          <div class="prob-top-flex">
+            <div>
+              <span class="prob-metric-title">Tingkat Estimasi Risiko Serangan Jantung</span>
+              <div id="riskMainPercent" class="prob-metric-number">0%</div>
+            </div>
+            <div id="probPill" class="prob-pill">-</div>
+          </div>
+
+          <!-- Progress Bar Indikator -->
+          <div class="progress-bar-bg" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <div id="heroProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+
+          <div class="breakdown-row">
+            <div class="breakdown-item-box">
+              <span class="breakdown-label">Probabilitas Kondisi Sehat / Normal</span>
+              <strong id="probSafeText" class="breakdown-val safe-val">0%</strong>
+            </div>
+            <div class="breakdown-item-box">
+              <span class="breakdown-label">Probabilitas Terindikasi Risiko Tinggi</span>
+              <strong id="probDangerText" class="breakdown-val danger-val">0%</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box Rekomendasi Medis -->
+        <div id="recBox" class="rec-box">
+          <div class="rec-header">
+            <span>💡</span>
+            <h4>Rekomendasi Medis &amp; Saran Preventif</h4>
+          </div>
+          <p id="recText">-</p>
+        </div>
+      </section>
+
+      <!-- Kartu Rincian Data Pasien (Dengan Tombol Dropdown di Kanan Atas) -->
+      <section class="card table-card">
+        <div class="table-card-header-flex">
+          <div class="table-header-titles">
+            <h3>Rincian Data Pengukuran &amp; Riwayat Pasien</h3>
+            <p>Berikut adalah 12 atribut parameter klinis dan gaya hidup yang dikirimkan ke model Machine Learning.</p>
+          </div>
+
+          <!-- Tombol Dropdown di Kanan Atas Sesuai Permintaan User -->
+          <button type="button" id="toggleDetailBtn" class="btn-dropdown-toggle" aria-expanded="false" aria-controls="tableCollapseWrapper">
+            <span id="toggleBtnText">Buka Rincian Data Pasien</span>
+            <span id="dropdownChevron" class="dropdown-chevron">&#9662;</span>
+          </button>
+        </div>
+
+        <!-- Wrapper Tabel yang Tersembunyi (Hidden / Collapsed) Secara Default -->
+        <div id="tableCollapseWrapper" class="table-collapse-wrapper">
+          <div class="data-table-wrapper">
+            <table class="patient-data-table">
+              <thead>
+                <tr>
+                  <th class="cell-center" style="width: 50px;">NO</th>
+                  <th>PARAMETER PENGUKURAN / RIWAYAT</th>
+                  <th>NILAI INPUT</th>
+                  <th>SATUAN / SKALA</th>
+                  <th>KATEGORI STANDAR</th>
+                </tr>
+              </thead>
+              <tbody id="patientTableBody">
+                <!-- Baris tabel diisi via JavaScript result.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tombol Aksi Bawah: Kembali & Cetak -->
+      <div class="bottom-actions-row">
+        <a href="/" class="btn btn-secondary">
+          <span>&larr;</span>
+          <span>Kembali ke Halaman Sebelumnya</span>
+        </a>
+        <button type="button" class="btn btn-primary" onclick="window.print()">
+          <span>🖨️</span>
+          <span>Cetak / Simpan Dokumen Hasil (PDF)</span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom-bar" style="border-top: none; padding-top: 0;">
+        <span>&copy; 2026 Kelompok 1 &bull; Praktikum Pembelajaran Mesin. Program Studi S1 Sistem Informasi Universitas Bengkulu.</span>
+        <a href="/" style="color: #CBD5E1; text-decoration: none;">&larr; Formulir Skrining</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/result.js"></script>
+</body>
+</html>
